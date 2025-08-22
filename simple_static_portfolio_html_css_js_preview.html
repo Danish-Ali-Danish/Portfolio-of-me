@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Danish – Simple Static Portfolio</title>
+  <meta name="description" content="A clean, modern, single‑file static portfolio in plain HTML, CSS and a dash of JS." />
+  <style>
+    :root {
+      --bg: #0b0f14;         /* page background */
+      --card: #0f1520;       /* card background */
+      --muted: #a0adc0;      /* muted text */
+      --text: #e6eefc;       /* main text */
+      --brand: #6ea8fe;      /* primary */
+      --brand-2: #8a5cf6;    /* secondary */
+      --ring: #6ea8fe55;     /* focus ring */
+      --border: #1b2533;     /* borders */
+      --ok: #2ecc71;
+      --warn: #f1c40f;
+      --err: #ff6b6b;
+    }
+
+    /* Light theme (toggled) */
+    .light {
+      --bg: #f7f9fc;
+      --card: #ffffff;
+      --muted: #56637a;
+      --text: #0b1220;
+      --brand: #3b82f6;
+      --brand-2: #9333ea;
+      --ring: #3b82f644;
+      --border: #e6eaf2;
+    }
+
+    html { scroll-behavior: smooth; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 70% -10%, #1a2340 0%, transparent 50%),
+                  radial-gradient(1000px 600px at -10% 30%, #182233 0%, transparent 50%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 72px 0; }
+    .section h2 { font-size: 2rem; margin: 0 0 16px; letter-spacing: 0.3px; }
+    .section p.lead { color: var(--muted); margin-top: 0; }
+
+    /* Header / Nav */
+    header {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: saturate(140%) blur(10px);
+      background: color-mix(in oklab, var(--bg), transparent 40%);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .brand { display: flex; gap: 10px; align-items: center; font-weight: 700; letter-spacing: .3px; }
+    .brand .dot { width: 10px; height: 10px; border-radius: 999px; background: linear-gradient(135deg, var(--brand), var(--brand-2)); box-shadow: 0 0 0 4px #0000, 0 0 16px 2px color-mix(in oklab, var(--brand), #000 10%); }
+    nav a { color: var(--muted); text-decoration: none; margin-left: 18px; font-size: 0.95rem; }
+    nav a:hover { color: var(--text); }
+    .actions { display: flex; align-items: center; gap: 10px; }
+    .btn { appearance: none; border: 1px solid var(--border); background: linear-gradient(180deg, color-mix(in oklab, var(--card), #fff 2%), var(--card)); color: var(--text); padding: 9px 14px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+    .btn:hover { border-color: color-mix(in oklab, var(--border), var(--brand) 40%); box-shadow: 0 6px 18px -8px #0009; }
+    .btn.primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); border: none; color: white; }
+
+    /* Hero */
+    .hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; align-items: center; padding: 56px 0 24px; }
+    .hero h1 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.15; margin: 0 0 12px; }
+    .badge { display: inline-flex; gap: 8px; align-items: center; font-size: .9rem; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
+    .pill { display: inline-block; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); font-size: .85rem; color: var(--muted); }
+    .hero-visual {
+      border: 1px solid var(--border); border-radius: 20px; background:
+        radial-gradient(400px 220px at 80% -10%, color-mix(in oklab, var(--brand), transparent 35%), transparent 60%),
+        radial-gradient(240px 200px at 30% 120%, color-mix(in oklab, var(--brand-2), transparent 35%), transparent 70%),
+        linear-gradient(180deg, color-mix(in oklab, var(--card), #fff 3%), var(--card));
+      aspect-ratio: 4 / 3; position: relative; overflow: hidden; display: grid; place-items: center;
+    }
+    .floating-card { position: absolute; inset: auto 24px 24px auto; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); box-shadow: 0 10px 30px -15px #000a; }
+
+    /* Cards grid */
+    .grid { display: grid; gap: 18px; }
+    .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+    .card { border: 1px solid var(--border); background: linear-gradient(180deg, color-mix(in oklab, var(--card), #fff 2%), var(--card)); border-radius: 16px; padding: 18px; transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+    .card:hover { transform: translateY(-4px); border-color: color-mix(in oklab, var(--border), var(--brand) 40%); box-shadow: 0 12px 28px -18px #000c; }
+    .card h3 { margin: 10px 0 6px; font-size: 1.1rem; }
+    .card p { margin: 0; color: var(--muted); font-size: .95rem; }
+    .card .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+    /* Timeline list (about) */
+    .timeline { display: grid; gap: 14px; }
+    .timeline li { list-style: none; padding: 14px; border: 1px dashed var(--border); border-radius: 12px; }
+    .timeline small { color: var(--muted); }
+
+    /* Contact */
+    form { display: grid; gap: 12px; }
+    input, textarea { width: 100%; padding: 12px 14px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 12px; outline: none; }
+    input:focus, textarea:focus { box-shadow: 0 0 0 4px var(--ring); border-color: color-mix(in oklab, var(--border), var(--brand) 40%); }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 28px 0; color: var(--muted); }
+
+    /* Utilities */
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .spacer { height: 16px; }
+    .center { text-align: center; }
+
+    /* Responsive */
+    @media (max-width: 920px) {
+      .hero { grid-template-columns: 1fr; }
+      .grid.cols-3 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      nav { display: none; }
+      .grid.cols-3, .grid.cols-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand" aria-label="brand">
+        <span class="dot"></span>
+        <span>Danish Ali</span>
+      </div>
+      <nav aria-label="main navigation">
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="actions">
+        <button class="btn" id="themeToggle" title="Toggle theme">Toggle theme</button>
+        <a class="btn primary" href="#contact">Hire Me</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Hero -->
+    <section class="hero" id="home" aria-label="hero">
+      <div>
+        <span class="badge">👋 Hello! I'm</span>
+        <h1>Danish — Front‑End Developer & Learner</h1>
+        <p class="lead">I build clean, responsive websites with HTML, CSS, JavaScript and love exploring React, Tailwind and Laravel. Here’s a crisp snapshot of my work.</p>
+        <div class="row">
+          <a class="btn primary" href="#projects">View Projects</a>
+          <a class="btn" href="#skills">See Skills</a>
+          <span class="pill">Available for work</span>
+        </div>
+      </div>
+      <div class="hero-visual" role="img" aria-label="Decorative developer preview">
+        <svg width="100%" height="100%" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="var(--brand)"/>
+              <stop offset="100%" stop-color="var(--brand-2)"/>
+            </linearGradient>
+          </defs>
+          <rect x="20" y="30" width="360" height="220" rx="16" fill="#0b1220" stroke="url(#g1)"/>
+          <rect x="40" y="60" width="220" height="12" rx="6" fill="url(#g1)"/>
+          <rect x="40" y="90" width="140" height="10" rx="5" fill="#253048"/>
+          <rect x="40" y="110" width="180" height="10" rx="5" fill="#253048"/>
+          <rect x="40" y="130" width="110" height="10" rx="5" fill="#253048"/>
+          <rect x="40" y="170" width="100" height="70" rx="10" fill="#121a2b" stroke="#253048"/>
+          <rect x="150" y="170" width="100" height="70" rx="10" fill="#121a2b" stroke="#253048"/>
+          <rect x="260" y="170" width="100" height="70" rx="10" fill="#121a2b" stroke="#253048"/>
+        </svg>
+        <div class="floating-card">✨ Clean UI • Fast • Responsive</div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="section" id="about">
+      <h2>About Me</h2>
+      <p class="lead">I'm an undergraduate Mathematics student from Lahore, exploring modern web development. I enjoy building crisp UIs and learning new tools the right way.</p>
+      <ul class="timeline">
+        <li>
+          <strong>2025</strong><br/>
+          <small>Learning React + Tailwind + TypeScript. Building components and animations.</small>
+        </li>
+        <li>
+          <strong>2024</strong><br/>
+          <small>Started with HTML/CSS/JS and created my first static projects.</small>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Skills -->
+    <section class="section" id="skills">
+      <h2>Skills</h2>
+      <p class="lead">Core tools I use and practice.</p>
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>HTML & Semantic Layout</h3>
+          <p>Clean structure, accessibility‑first markup, SEO‑friendly tags.</p>
+          <div class="tags"><span class="pill">Semantic</span><span class="pill">SEO</span><span class="pill">A11y</span></div>
+        </div>
+        <div class="card">
+          <h3>CSS & Responsive Design</h3>
+          <p>Flexbox, Grid, utility classes, modern effects, fluid typography.</p>
+          <div class="tags"><span class="pill">Flex/Grid</span><span class="pill">Animations</span><span class="pill">Dark/Light</span></div>
+        </div>
+        <div class="card">
+          <h3>JavaScript Basics</h3>
+          <p>DOM manipulation, simple components, clean patterns.</p>
+          <div class="tags"><span class="pill">Modules</span><span class="pill">Events</span><span class="pill">Forms</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section class="section" id="projects">
+      <h2>Projects</h2>
+      <p class="lead">A few sample cards you can replace with your real projects or GitHub links.</p>
+      <div class="grid cols-3">
+        <article class="card">
+          <h3>Modern Portfolio</h3>
+          <p>Single‑page site with smooth sections, gradient accents and clean typography.</p>
+          <div class="tags"><span class="pill">HTML</span><span class="pill">CSS</span><span class="pill">JS</span></div>
+        </article>
+        <article class="card">
+          <h3>UI Components</h3>
+          <p>Reusable cards, buttons, navbars with consistent spacing and tokens.</p>
+          <div class="tags"><span class="pill">Design</span><span class="pill">Components</span></div>
+        </article>
+        <article class="card">
+          <h3>Mini Dashboard</h3>
+          <p>Responsive grid, minimal charts, and accessible forms.</p>
+          <div class="tags"><span class="pill">Responsive</span><span class="pill">A11y</span></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Services -->
+    <section class="section" id="services">
+      <h2>Services</h2>
+      <p class="lead">How I can help clients and teams.</p>
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>Landing Pages</h3>
+          <p>Fast, beautiful pages that convert with clean code.</p>
+        </div>
+        <div class="card">
+          <h3>Frontend Integration</h3>
+          <p>Pixel‑perfect UIs integrated with APIs or CMS.</p>
+        </div>
+        <div class="card">
+          <h3>Fixes & Improvements</h3>
+          <p>Bug fixes, polish, performance & accessibility tweaks.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="section" id="contact">
+      <h2>Contact</h2>
+      <p class="lead">Let’s talk about your next project.</p>
+      <form onsubmit="event.preventDefault(); alert('Thanks! I will get back to you.');">
+        <div class="grid cols-2">
+          <div>
+            <label for="name">Name</label>
+            <input id="name" name="name" placeholder="Your name" required />
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required />
+          </div>
+        </div>
+        <div>
+          <label for="msg">Message</label>
+          <textarea id="msg" name="msg" rows="5" placeholder="Tell me about your idea…" required></textarea>
+        </div>
+        <div class="row">
+          <button class="btn primary" type="submit">Send Message</button>
+          <span class="pill">Response: 24–48h</span>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container row" style="justify-content: space-between;">
+      <span>© <span id="y"></span> Danish Ali — All rights reserved.</span>
+      <span class="row" aria-label="socials">
+        <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" style="color:inherit;text-decoration:none">LinkedIn</a>
+        <span>•</span>
+        <a href="https://github.com/" target="_blank" rel="noreferrer" style="color:inherit;text-decoration:none">GitHub</a>
+        <span>•</span>
+        <a href="mailto:danijuttt011@gmail.com" style="color:inherit;text-decoration:none">Email</a>
+      </span>
+    </div>
+  </footer>
+
+  <script>
+    // Theme toggle (dark/light)
+    const toggle = document.getElementById('themeToggle');
+    const root = document.documentElement;
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') document.body.classList.add('light');
+    toggle.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+    });
+
+    // Current year in footer
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
